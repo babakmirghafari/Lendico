@@ -11,19 +11,19 @@ import java.util.*;
 public class CalculationBasics {
 
     public double principalCalculation(double initialOutstandingPrincipal, float nominalRate, int duration, int monthIndex){
-        double anuuity = this.annuity(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
+        double anuuity = this.annuityCalculation(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
         double interest = interestCalulation(initialOutstandingPrincipal, nominalRate);
         double principal = BigDecimal.valueOf(anuuity - interest).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
         return principal;
     }
-    public double interestCalulation(double initialOutstandingPrincipal, float nominalRate) {
+    public static double interestCalulation(double initialOutstandingPrincipal, float nominalRate) {
         double interest = BigDecimal.valueOf((nominalRate / 100 * 30 * initialOutstandingPrincipal) / 360).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
         return interest;
     }
 
-    public double annuity(double initialOutstandingPrincipal, float nominalRate, int duration,int monthIndex) {
-        return this.annuityCalculation(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
-    }
+//    public double annuity(double initialOutstandingPrincipal, float nominalRate, int duration,int monthIndex) {
+//        return this.annuityCalculation(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
+//    }
 
     public Double annuityCalculation(double loanAmount,float nominalRate,int duration,int monthIndex){
 
