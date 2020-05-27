@@ -17,39 +17,31 @@ public class GeneratePayLoudObjectService implements GeneratePayLoudObjectInterf
     @Autowired
     CalculationBasics calculationBasics;
 
-    static double principal=0.0;
-    static double initialOutstandingPrincipal=0.0;
-    static double interest=0.0;
-
     @Override
     public Collection<ResponseObject> generateResposePayLoad(RequestObject requestObject) {
-
-        List<ResponseObject> responseObjectList=IntStream.range(0,requestObject.getDuration()).boxed().map(monthIndex->{
-
-            if (monthIndex==0)
-                initialOutstandingPrincipal=requestObject.getLoanAmount();
-            else
-                initialOutstandingPrincipal-=principal;
-
-            double _roundedInitialOutstandingPrincipal=
-                    (initialOutstandingPrincipal>principal)
-                    ?BigDecimal.valueOf(initialOutstandingPrincipal).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue():principal;
-            principal=calculationBasics.principleCalculation(_roundedInitialOutstandingPrincipal,requestObject.getNominalRate(),requestObject.getDuration(),monthIndex);
-            interest=calculationBasics.interestCalulation(_roundedInitialOutstandingPrincipal,requestObject.getNominalRate());
-            double borrowerPaymentAmount=calculationBasics.borrowerPaymentAmount(principal,interest);
-            ResponseObject responseObject=ResponseObject.builder()
-                    .borrowerPaymentAmount(borrowerPaymentAmount)
-                    .date(calculationBasics.nextMonth(requestObject.getStartDate(),monthIndex))
-                    .initialOutstandingPrincipal(_roundedInitialOutstandingPrincipal)
-                    .interest(interest)
-                    .principal(principal)
-                    .remainingOutstandingPrincipals(_roundedInitialOutstandingPrincipal-principal)
-                    .build();
-            return  responseObject;
-        }).collect(Collectors.toList());
-
-        return responseObjectList;
+        return IntStream.range(0,requestObject.getDuration())
+                .boxed()
+                .map(monthIndex->{
+                    ResponseObject responseObject=this.responseObject(requestObject,monthIndex);
+                    requestObject.setLoanAmount(responseObject.getRemainingOutstandingPrincipals());
+                    return  responseObject;
+                }).collect(Collectors.toList());
     }
 
+    private ResponseObject responseObject(RequestObject requestObject, int monthIndex) {
+        double principle=calculationBasics.principalCalculation(requestObject.getLoanAmount(), requestObject.getNominalRate(), requestObject.getDuration(), monthIndex);
+        double interest = calculationBasics.interestCalulation(requestObject.getLoanAmount(), requestObject.getNominalRate());
+        double _roundedInitialOutstandingPrincipal=
+                (requestObject.getLoanAmount()>principle)
+                        ? BigDecimal.valueOf(requestObject.getLoanAmount()).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue():principle;
+        return ResponseObject.builder()
+                .borrowerPaymentAmount(BigDecimal.valueOf(principle+interest).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue())
+                .initialOutstandingPrincipal(_roundedInitialOutstandingPrincipal)
+                .principal(principle)
+                .interest(interest)
+                .date(calculationBasics.nextMonth(requestObject.getStartDate(),monthIndex))
+                .remainingOutstandingPrincipals(_roundedInitialOutstandingPrincipal-principle)
+                .build();
+    }
 
 }

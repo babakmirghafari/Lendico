@@ -1,41 +1,36 @@
 package com.lendico.plangenerator.service.calculationbasics;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 @Component
 public class CalculationBasics {
 
-    @Autowired
-    AnnuityPaymentCalculation annuityPaymentCalculation;
-
-    public double borrowerPaymentAmount(double principleCalculation,double interest) {
-
-        double borrowerPaymentAmount = principleCalculation + interest;
-        return BigDecimal.valueOf(borrowerPaymentAmount).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-    }
-
-    public double principleCalculation(double initialOutstandingPrincipal, float nominalRate, int duration,int monthIndex) {
+    public double principalCalculation(double initialOutstandingPrincipal, float nominalRate, int duration, int monthIndex){
         double anuuity = this.annuity(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
-        double interest = this.interestCalulation(initialOutstandingPrincipal, nominalRate);
-        double principle = BigDecimal.valueOf(anuuity - interest).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-        return principle;
+        double interest = interestCalulation(initialOutstandingPrincipal, nominalRate);
+        double principal = BigDecimal.valueOf(anuuity - interest).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+        return principal;
     }
-
     public double interestCalulation(double initialOutstandingPrincipal, float nominalRate) {
         double interest = BigDecimal.valueOf((nominalRate / 100 * 30 * initialOutstandingPrincipal) / 360).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
         return interest;
     }
 
     public double annuity(double initialOutstandingPrincipal, float nominalRate, int duration,int monthIndex) {
-        return annuityPaymentCalculation.annuityCalculation(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
+        return this.annuityCalculation(initialOutstandingPrincipal, nominalRate, duration,monthIndex);
+    }
+
+    public Double annuityCalculation(double loanAmount,float nominalRate,int duration,int monthIndex){
+
+        double ratePerMonth=nominalRate/12/100;
+        double _calculatedValue=(loanAmount*(ratePerMonth))/(1-(Math.pow((1+ratePerMonth),-(duration-monthIndex))));
+        double calculatedValue=BigDecimal.valueOf(_calculatedValue).setScale(2,BigDecimal.ROUND_HALF_EVEN).doubleValue();
+        return calculatedValue;
     }
 
     public Timestamp nextMonth(Timestamp currentDate, int monthIndex) {
