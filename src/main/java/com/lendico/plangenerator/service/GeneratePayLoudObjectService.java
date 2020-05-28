@@ -31,7 +31,7 @@ public class GeneratePayLoudObjectService implements GeneratePayLoudObjectInterf
     @Override
     public Collection<ResponseObject> generateResponsePayLoad(RequestObject requestObject) {
         /**
-         * create a loop start with 0 and ended with requestObject.getDuration()
+         * create a loop started with 0 and ended with requestObject.getDuration()
          * this loop create responseObject for each month (for example if user desired duration = 24, then this loop create 24 responseObject )
          */
         return IntStream.range(0,requestObject.getDuration())
@@ -46,7 +46,7 @@ public class GeneratePayLoudObjectService implements GeneratePayLoudObjectInterf
                      * after each ResponseObject created, remainingOutstandingPrincipals and initialOutstandingPrincipal should be change for
                      * next month. in first month initialOutstandingPrincipal is user desired loanAmount (for example 5000) ,
                      * but for next month initialOutstandingPrincipal is previous remainingOutstandingPrincipals
-                     * (for example after first month calculation remainingOutstandingPrincipals=4807.65).This value should be set for next month initialOutstandingPrincipal
+                     * (for example after first month calculation, remainingOutstandingPrincipals=4807.65).This value should be set for next month initialOutstandingPrincipal
                      * this line set previous month remainingOutstandingPrincipals to requestObject loanAmount and send it as new initialOutstandingPrincipal with
                      * requestObject. because of we don't need previous values for requestObject(previous month responseObject created), we don't care
                      * about changed values.
@@ -71,12 +71,15 @@ public class GeneratePayLoudObjectService implements GeneratePayLoudObjectInterf
          */
         Timestamp date=calculationBasics.nextMonth(requestObject.getStartDate(),monthIndex);
         /**
-         * check if principal exceeds the initialOutstandingPrincipal(set To requestObject.getLoanAmount @see{@link #generateResponsePayLoad(RequestObject)} comments)
-         * principal value set initialOutstandingPrincipal , else initialOutstandingPrincipal used for calculation
+         * check if principal exceeds the initialOutstandingPrincipal ( @see{@link #generateResponsePayLoad(RequestObject)} comments)
+         * principal value set to initialOutstandingPrincipal , else initialOutstandingPrincipal used for calculation
          * (normally it happen in last month)
+         *
+         * after this check rounded initialOutstandingPrincipal with BigDecimal.ROUND_HALF_DOWN
          */
         double _roundedInitialOutstandingPrincipal=
                 (requestObject.getLoanAmount()>principle)
+
                         ? BigDecimal.valueOf(requestObject.getLoanAmount()).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue():principle;
         /**
          * build ResponseObject and send it to {@link #generateResponsePayLoad(RequestObject)} for create Collection<ResponseObject>
