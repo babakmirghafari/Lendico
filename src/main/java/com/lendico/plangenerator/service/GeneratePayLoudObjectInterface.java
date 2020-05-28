@@ -7,5 +7,5 @@ import java.util.Collection;
 
 public interface GeneratePayLoudObjectInterface {
 
-    Collection<ResponseObject> generateResposePayLoad(RequestObject requestObject);
+    Collection<ResponseObject> generateResponsePayLoad(RequestObject requestObject);
 }

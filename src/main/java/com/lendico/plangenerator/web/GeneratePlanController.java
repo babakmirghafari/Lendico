@@ -17,7 +17,6 @@ public class GeneratePlanController {
 
     @PostMapping
     public Collection<ResponseObject> generateplan(@RequestBody RequestObject requestObejct) {
-        return generatePayLoudObjectInterface.generateResposePayLoad(requestObejct);
-
+        return generatePayLoudObjectInterface.generateResponsePayLoad(requestObejct);
     }
 }
