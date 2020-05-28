@@ -21,13 +21,19 @@ public class CalculationBasics {
     /**
      *This method responsible for calculate principal for each month with these parameters:
      * @param requestObject=this object chang during calculation , for each month loanAmount changed according this formula
-     *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal(remainingOutstandingPrincipals)
-     * @param monthIndex =index for each month start from 0 to desired duration
+     *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal( previous month remainingOutstandingPrincipals)
+     * @param monthIndex =index for each month start from 0 to desired duration ( for example 0 to 24 )
      * @return= a double value calculated base on principal formula: 
-     *                     calculated Annuity {@link #annuityCalculation(RequestObject, int)}-calculated interest {@link #interestCalulation(RequestObject)}
+     *                     calculated Annuity {@link #annuityCalculation(RequestObject, int)} - calculated interest {@link #interestCalulation(RequestObject)}
      */
     public double principalCalculation(RequestObject requestObject, int monthIndex){
+        /**
+         * {@link #annuityCalculation(RequestObject, int)}
+         */
         double anuuity = annuityCalculation(requestObject,monthIndex);
+        /**
+         * {@link #interestCalulation(RequestObject)}
+         */
         double interest = interestCalulation(requestObject);
         /**
          * using BigDecimal.ROUND_HALF_DOWN for round principal calculated value
@@ -38,7 +44,7 @@ public class CalculationBasics {
     /**
      *This method responsible for calculate interest for each month with this parameter:
      * @param requestObject=this object chang during calculation , for each month loanAmount changed according this formula
-     *      *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal(remainingOutstandingPrincipals)
+     *      *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal(previous month remainingOutstandingPrincipals)
      * @return a double value calculated base on interest calculation formula
      */
     public  double interestCalulation(RequestObject requestObject) {
@@ -54,19 +60,19 @@ public class CalculationBasics {
     /**
      *This method responsible for calculate annuity for each month with these parameters :
      * @param requestObject=this object chang during calculation , for each month loanAmount changed according this formula
-     *      *      *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal(remainingOutstandingPrincipals)
-     * @param monthIndex= index for each month start from 0 to desired duration
+     *      *      *                     new month loanAmount(initialOutstandingPrincipal)=previous month loanAmount- previous month principal(previous month remainingOutstandingPrincipals)
+     * @param monthIndex= index for each month start from 0 to desired duration  ( for example 0 to 24 )
      * @return a double base on annuity formula
      */
     public double annuityCalculation(RequestObject requestObject,int monthIndex){
         /**
-         * calculate nominal rate for each month (user desired nominal rate is for a year, but in annuity formula we have to use annuity for month)
+         * calculate nominal rate for each month (user desired nominal rate is for a year, but in annuity formula we should  use annuity for month)
          */
         double ratePerMonth=requestObject.getNominalRate()/12/100;
         /**
          * annuity formula for each month
                                       (requestObject.getDuration()-monthIndex)-->calculate power for related month
-                                      (for example user desired month 24,related month or month index  3,calculated value=21)
+                                      (for example user desired month 24,related month or month index is 3,calculated value is 21)
          */
         double calculatedValue=(requestObject.getLoanAmount()*(ratePerMonth))/(1-(Math.pow((1+ratePerMonth),-(requestObject.getDuration()-monthIndex))));
         /**
