@@ -2,6 +2,8 @@ package com.lendico.plangenerator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lendico.plangenerator.model.RequestObject;
+import com.lendico.plangenerator.service.GeneratePayLoudObjectInterface;
+import com.lendico.plangenerator.service.calculationbasics.CalculationBasics;
 import com.lendico.plangenerator.web.GeneratePlanController;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -21,7 +23,13 @@ public class AbstractTestClass {
     MockMvc mockMvc;
 
     @Autowired
-    GeneratePlanController generatePlanController;
+    protected GeneratePlanController generatePlanController;
+
+    @Autowired
+    protected GeneratePayLoudObjectInterface generatePayLoudObjectInterface;
+
+    @Autowired
+    protected CalculationBasics calculationBasics;
 
     static final String requestUrl="http://localhost:8080/generate-plan";
     RequestObject requestObject;
