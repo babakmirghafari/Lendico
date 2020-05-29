@@ -16,6 +16,10 @@ import java.sql.Timestamp;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+/**
+ * All share needed objects and configuration you can find here,
+ * each Test class need this share objects and configuration just extend from this abstract class
+ */
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class AbstractTestClass {
